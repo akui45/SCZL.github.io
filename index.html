@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>古丝绸之路国内线路</title>
+    <style>
+        .box{
+            position: absolute;
+            margin: auto;
+            top:0;
+            left: 0;
+            bottom: 2px;
+            right: 0;
+            background-color: rgba(223, 207, 181, 0.8);
+        }
+    </style>
+</head>
+<body>
+<div class="box" id="box"></div>
+</body>
+<script src="echarts.js"></script>
+<script src="china.js"></script>
+<script>
+    var mychart=echarts.init(document.getElementById("box"))
+    var geoCoordMap = {
+        '西安': [108.946466,34.347269],
+        '天水': [105.731417,34.587412],
+        '西宁': [101.78445,36.623385],
+        '武威': [102.644554,37.934378],
+        '张掖': [100.456411,38.932066],
+        '酒泉': [98.500685,39.738469],
+        '嘉峪关': [98.296204,39.77796],
+        '敦煌': [94.668527,40.147867],
+        '哈密': [93.521216,42.825824],
+        '楼兰': [89.922778,40.498611],
+        '若羌': [88.175324,39.028991],
+        '吐鲁番': [89.197297,42.956985],
+        '乌鲁木齐': [87.416029,43.477086],
+        '库尔勒': [86.181494,41.723448],
+        '库车': [82.968459,41.723448],
+        '伊宁': [81.284242,43.915299],
+        '阿克苏': [80.269927,41.17386],
+        '和田': [79.920212,37.118336],
+        '喀什': [77.252434,38.420157],
+        '兰州': [103.840521,36.067235]
+    };
+    var Data = [
+        [{name:'西安'}, {name:'西安'}],
+        [{name:'西安'}, {name:'天水'}],
+        [{name:'天水'}, {name:'兰州'}],
+        [{name:'天水'}, {name:'西宁'}],
+        [{name:'兰州'}, {name:'武威'}],
+        [{name:'西宁'}, {name:'张掖'}],
+        [{name:'武威'}, {name:'张掖'}],
+        [{name:'张掖'}, {name:'酒泉'}],
+        [{name:'酒泉'}, {name:'嘉峪关'}],
+        [{name:'嘉峪关'}, {name:'敦煌'}],
+        [{name:'嘉峪关'}, {name:'哈密'}],
+        [{name:'敦煌'}, {name:'楼兰'}],
+        [{name:'敦煌'}, {name:'若羌'}],
+        [{name:'哈密'}, {name:'吐鲁番'}],
+        [{name:'吐鲁番'}, {name:'乌鲁木齐'}],
+        [{name:'吐鲁番'}, {name:'库尔勒'}],
+        [{name:'乌鲁木齐'}, {name:'伊宁'}],
+        [{name:'楼兰'}, {name:'库尔勒'}],
+        [{name:'库尔勒'}, {name:'库车'}],
+        [{name:'库车'}, {name:'阿克苏'}],
+        [{name:'阿克苏'}, {name:'喀什'}],
+        [{name:'若羌'}, {name:'和田'}],
+        [{name:'和田'}, {name:'喀什'}]
+    ];
+    var planePath = 'path://M1705.06,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.491c-37.332-0.305-64.482,36.829-63.961,121.491l0.073,208.063l-319.9,221.799v89.254l330.343-157.288l12.238,241.308l-134.449,92.931l0.531,42.034l175.125-42.917l175.125,42.917l0.531-42.034l-134.449-92.931l12.238-241.308L1705.06,1318.313z';
+    //var planePath = 'arrow';
+    var convertData = function (data) {
+        var res = [];
+        for (var i = 0; i < data.length; i++) {
+
+            var dataItem = data[i];
+
+            var fromCoord = geoCoordMap[dataItem[0].name];
+            var toCoord = geoCoordMap[dataItem[1].name];
+            if (fromCoord && toCoord) {
+                res.push({
+                    fromName: dataItem[0].name,
+                    toName: dataItem[1].name,
+                    coords: [fromCoord, toCoord],
+                    value: dataItem[1].value
+                });
+            }
+        }
+        return res;
+
+    };
+    var color = ['#956948'];//航线的颜色
+    var series = [];
+    [['丝绸之路国内路线', Data]].forEach(function (item, i) {
+        series.push({
+                name: item[0],
+                type: 'lines',
+                zlevel: 1,
+                effect: {
+                    show: true,
+                    period: 4,
+                    trailLength: 0.3,
+                    symbol: 'arrow',
+                    color: color[i],   //arrow箭头的颜色
+                    symbolSize: 3
+                },
+                lineStyle: {
+                    normal: {
+                        width: 0,
+                        color: color[i],
+                        opacity:1,
+                        curveness: 0.2
+                    }
+                },
+                data: convertData(item[1])
+            },
+            {
+                name: item[0],
+                type: 'lines',
+                zlevel: 2,
+                symbol: ['none', 'arrow'],
+                symbolSize: 5,
+                lineStyle: {
+                    normal: {
+                        color: color[i],
+                        width: 1,
+                        opacity: 0.6,
+                        curveness: 0.2
+                    }
+                },
+                data: convertData(item[1])
+            },
+            {
+                name: item[0],
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                zlevel: 2,
+                rippleEffect: {
+                    brushType: 'stroke'
+                },
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{b}',
+                        fontSize:10
+                    }
+                },
+                symbolSize: 4,
+                itemStyle: {
+                    normal: {
+                        color: color[i],
+                    },
+                },
+                data: item[1].map(function (dataItem) {
+                    return {
+                        name: dataItem[1].name,
+                        value: geoCoordMap[dataItem[1].name].concat([dataItem[1].value])
+                    };
+                })
+            });
+    });
+    var option = {
+        title: {
+            top: 15,
+            x:'center',
+            text: '丝绸之路国内路线图',
+            textStyle: {
+                fontFamily: 'KaiTi',
+                fontSize:'20',
+                color: '#000000'
+            }
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter:function(params, ticket, callback){
+                if(params.seriesType=="effectScatter") {
+                    return "所经地点："+params.data.name;
+                }
+                else{
+                    return params.name;
+                }
+            }
+        },
+        legend: {
+            orient: 'vertical',
+            bottom:0,
+            left: 0,
+            data:['丝绸之路国内路线'],
+            textStyle: {
+                color: '#000',
+                fontSize:'13',
+            },
+            selectedMode: 'multiple'
+        },
+        geo: {
+            map: 'china',
+            label: {
+                emphasis: {
+                    show: true,
+                    color:'#000'
+                }
+            },
+            zoom:2,
+            top: '170rem',
+            roam: true,
+            itemStyle: {
+                normal: {
+                    areaColor: '#d4c1a6',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                },
+                emphasis: {
+                    areaColor: '#aa8b73',
+                }
+            },
+        },
+        series: series
+    };
+    mychart.setOption(option);
+    window.onresize=this.mychart.resize;
+</script>
+</html>
